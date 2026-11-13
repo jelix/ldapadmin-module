@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * @author    Laurent Jouanneau
+ * @copyright 2026 Laurent Jouanneau
+ * @licence   MIT
+ */
 namespace Jelix\LdapAdmin;
 
 interface LdapConfigAdapterInterface

@@ -3,11 +3,11 @@
 
     <!-- connection -->
 
-    <input ref="ldap_host" required="true">
+    <input ref="ldap_host" required="true" size="40">
        <label locale="ldapadmin~main.form.ldap_host"/>
     </input>
 
-    <input ref="ldap_port" type="integer" required="true" defaultvalue="389">
+    <input ref="ldap_port" type="integer" required="true" defaultvalue="389"  size="5">
        <label locale="ldapadmin~main.form.ldap_port"/>
     </input>
 
@@ -18,7 +18,7 @@
         <item value="ldaps" locale="ldapadmin~main.form.ldap_tls.ldaps" />
     </menulist>
 
-    <input ref="ldap_admin_dn">
+    <input ref="ldap_admin_dn" size="60">
        <label locale="ldapadmin~main.form.ldap_admin_dn"/>
        <help locale="ldapadmin~main.form.ldap_admin_dn.help"/>
     </input>
@@ -29,7 +29,7 @@
 
     <!-- mapping -->
 
-    <input ref="searchUserBaseDN" required="true">
+    <input ref="searchUserBaseDN" required="true" size="60">
        <label locale="ldapadmin~main.form.searchUserBaseDN"/>
     </input>
 
@@ -44,7 +44,7 @@
         <label locale="ldapadmin~main.form.searchGroupEnabled"/>
     </checkbox>
 
-    <input ref="searchGroupFilter">
+    <input ref="searchGroupFilter"  size="60">
         <label locale="ldapadmin~main.form.searchGroupFilter"/>
     </input>
 
@@ -52,7 +52,7 @@
         <label locale="ldapadmin~main.form.searchGroupProperty"/>
     </input>
 
-    <input ref="searchGroupBaseDN">
+    <input ref="searchGroupBaseDN" size="60">
         <label locale="ldapadmin~main.form.searchGroupBaseDN"/>
     </input>
 
