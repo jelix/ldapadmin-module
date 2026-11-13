@@ -117,11 +117,6 @@ class ldapCtrl extends jController
             $valid = false;
         }
 
-        if ($form->getData('searchGroupEnabled') && trim($form->getData('searchGroupFilter')) === '') {
-            $form->setErrorOn('searchGroupFilter', jLocale::get('ldapadmin~main.message.searchGroupFilter.missing'));
-            $valid = false;
-        }
-
         if (!$valid) {
             jMessage::add(jLocale::get('ldapadmin~main.message.form.invalid'), 'error');
             return $this->redirect('ldapadmin~ldap:config');
@@ -154,10 +149,13 @@ class ldapCtrl extends jController
         $config['searchUserBaseDN'] = $form->getData('searchUserBaseDN');
         $config['searchUserFilter'] = $searchUserFilter;
         $config['searchAttributes'] = implode(',', $searchAttributesParts);
-        $config['searchGroupFilter'] = $form->getData('searchGroupEnabled') ? $form->getData('searchGroupFilter') : '';
-        $config['searchGroupProperty'] = $form->getData('searchGroupProperty');
-        $config['searchGroupBaseDN'] = $form->getData('searchGroupBaseDN');
-        $config['searchGroupKeepUserInDefaultGroups'] = $form->getData('searchGroupKeepUserInDefaultGroups');
+        $config['featureGroupLoad'] = $form->getData('searchGroupEnabled');
+        if ($config['featureGroupLoad']) {
+            $config['searchGroupFilter'] = $form->getData('searchGroupFilter');
+            $config['searchGroupProperty'] = $form->getData('searchGroupProperty');
+            $config['searchGroupBaseDN'] = $form->getData('searchGroupBaseDN');
+            $config['searchGroupKeepUserInDefaultGroups'] = $form->getData('searchGroupKeepUserInDefaultGroups');
+        }
 
         $ldapConfAdapter->saveConfiguration($config);
 
@@ -367,19 +365,14 @@ class ldapCtrl extends jController
 
         $searchGroupEnabled = $this->param('searchGroupEnabled', null);
         if ($searchGroupEnabled !== null) {
+            $config['featureGroupLoad'] = $searchGroupEnabled;
             $config['searchGroupFilter'] = $searchGroupEnabled ? $this->param('searchGroupFilter', '') : '';
-        }
-        $searchGroupProperty = $this->param('searchGroupProperty', '');
-        if ($searchGroupProperty !== '') {
-            $config['searchGroupProperty'] = $searchGroupProperty;
-        }
-        $searchGroupBaseDN = $this->param('searchGroupBaseDN', '');
-        if ($searchGroupBaseDN !== '') {
-            $config['searchGroupBaseDN'] = $searchGroupBaseDN;
-        }
-        $searchGroupKeepUserInDefaultGroups = $this->param('searchGroupKeepUserInDefaultGroups', null);
-        if ($searchGroupKeepUserInDefaultGroups !== null) {
-            $config['searchGroupKeepUserInDefaultGroups'] = (bool) $searchGroupKeepUserInDefaultGroups;
+            $config['searchGroupProperty'] = $this->param('searchGroupProperty', '');
+            $config['searchGroupBaseDN'] = $this->param('searchGroupBaseDN', '');
+            $searchGroupKeepUserInDefaultGroups = $this->param('searchGroupKeepUserInDefaultGroups', null);
+            if ($searchGroupKeepUserInDefaultGroups !== null) {
+                $config['searchGroupKeepUserInDefaultGroups'] = (bool) $searchGroupKeepUserInDefaultGroups;
+            }
         }
 
         return $config;

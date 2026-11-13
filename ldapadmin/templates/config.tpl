@@ -9,7 +9,6 @@
         <ul>
             <li><a href="#tabs-connect">{@ldapadmin~main.tabs.connect@}</a></li>
             <li><a href="#tabs-mapping">{@ldapadmin~main.tabs.mapping@}</a></li>
-            <li><a href="#tabs-user">{@ldapadmin~main.tabs.user@}</a></li>
             <li><a href="#tabs-groups">{@ldapadmin~main.tabs.groups@}</a></li>
         </ul>
 
@@ -102,39 +101,17 @@
                     data-url="{jurl 'ldapadmin~ldap:testMapping'}"
                     data-dialog-title="{@ldapadmin~main.dialog.title.mapping@}"
                     >{@ldapadmin~main.button.test.mapping@}</button>
-            </p>
-        </div>
 
-        <div id="tabs-user">
-            <p>
                 <button type="button" class="ldap-test-button" data-test="identification" data-need-password="1"
-                    data-url="{jurl 'ldapadmin~ldap:testIdentification'}"
-                    data-dialog-title="{@ldapadmin~main.dialog.title.identification@}"
-                    >{@ldapadmin~main.button.test.identification@}</button>
+                        data-url="{jurl 'ldapadmin~ldap:testIdentification'}"
+                        data-dialog-title="{@ldapadmin~main.dialog.title.identification@}"
+                >{@ldapadmin~main.button.test.identification@}</button>
             </p>
         </div>
 
         <div id="tabs-groups">
-            <p>
-                {ctrl_label 'searchGroupEnabled'}
-                {ctrl_control 'searchGroupEnabled'}
-            </p>
-            <p>
-                {ctrl_label 'searchGroupFilter'}
-                {ctrl_control 'searchGroupFilter'}
-            </p>
-            <p>
-                {ctrl_label 'searchGroupProperty'}
-                {ctrl_control 'searchGroupProperty'}
-            </p>
-            <p>
-                {ctrl_label 'searchGroupBaseDN'}
-                {ctrl_control 'searchGroupBaseDN'}
-            </p>
-            <p>
-                {ctrl_label 'searchGroupKeepUserInDefaultGroups'}
-                {ctrl_control 'searchGroupKeepUserInDefaultGroups'}
-            </p>
+
+            {ctrl_control 'searchGroupEnabled'}
             <p>
                 <button type="button" class="ldap-test-button" data-test="groups" data-need-password="1"
                     data-url="{jurl 'ldapadmin~ldap:testGroups'}"

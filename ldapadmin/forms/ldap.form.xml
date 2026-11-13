@@ -39,26 +39,28 @@
          manually in the controller. -->
 
     <!-- groups synchronization -->
-
-    <checkbox ref="searchGroupEnabled">
+    <group ref="searchGroupEnabled" withcheckbox="true">
         <label locale="ldapadmin~main.form.searchGroupEnabled"/>
-    </checkbox>
 
-    <input ref="searchGroupFilter"  size="60">
-        <label locale="ldapadmin~main.form.searchGroupFilter"/>
-    </input>
+        <input ref="searchGroupFilter" size="60" required="true">
+            <label locale="ldapadmin~main.form.searchGroupFilter"/>
+            <alert type="required" locale="ldapadmin~main.message.searchGroupFilter.missing"/>
+        </input>
 
-    <input ref="searchGroupProperty">
-        <label locale="ldapadmin~main.form.searchGroupProperty"/>
-    </input>
+        <input ref="searchGroupProperty" required="true">
+            <label locale="ldapadmin~main.form.searchGroupProperty"/>
+            <alert type="required" locale="ldapadmin~main.message.searchGroupProperty.missing"/>
+        </input>
 
-    <input ref="searchGroupBaseDN" size="60">
-        <label locale="ldapadmin~main.form.searchGroupBaseDN"/>
-    </input>
+        <input ref="searchGroupBaseDN" size="60" required="true">
+            <label locale="ldapadmin~main.form.searchGroupBaseDN"/>
+            <alert type="required" locale="ldapadmin~main.message.searchGroupBaseDN.missing"/>
+        </input>
 
-    <checkbox ref="searchGroupKeepUserInDefaultGroups" defaultvalue="true">
-        <label locale="ldapadmin~main.form.searchGroupKeepUserInDefaultGroups"/>
-    </checkbox>
+        <checkbox ref="searchGroupKeepUserInDefaultGroups" defaultvalue="true">
+            <label locale="ldapadmin~main.form.searchGroupKeepUserInDefaultGroups"/>
+        </checkbox>
+    </group>
 
     <submit ref="_submit">
         <label locale="ldapadmin~main.form.submit"/>
