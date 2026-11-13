@@ -1,0 +1,9 @@
+{
+    "name": "jelix/ldapadmintest",
+    "type": "application",
+    "require": {
+        "php": ">=8.2",
+        "phpunit/phpunit": "^11.5.57"
+    },
+    "minimum-stability": "stable"
+}

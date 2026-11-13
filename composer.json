@@ -3,7 +3,7 @@
     "type": "jelix-module",
     "description": "Module for Jelix, displaying an interface to manage an LDAP configuration used by some modules like multiauth",
     "keywords": ["ldap", "jelix"],
-    "homepage": "http://jelix.org",
+    "homepage": "https://jelix.org",
     "license": "MIT",
     "authors": [
         {

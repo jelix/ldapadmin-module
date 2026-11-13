@@ -1,0 +1,17 @@
+{
+    "name": "jelix/ldapadmintest",
+    "type": "project",
+    "license": "LGPL",
+    "require": {
+      "php": ">=8.2",
+      "jelix/jelix": "dev-jelix-1.8.x",
+      "jelix/ldap-client": "dev-master",
+      "jelix/multiauth-module": "dev-master"
+    },
+    "minimum-stability": "stable",
+    "config": {
+        "allow-plugins": {
+            "jelix/composer-module-setup": true
+        }
+    }
+}

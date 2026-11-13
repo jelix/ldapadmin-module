@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="testapp-ldapadmin@jelix.org" name="testapp" createdate="2026-11-11">
+        <version date="2026-11-11">1.0</version>
+        <label lang="en_US">testapp</label>
+        <description lang="en_US" />
+        <license URL="">MIT</license>
+        <copyright>2022 Laurent Jouanneau</copyright>
+        <creator name="Laurent Jouanneau" email="laurent@jelix.org"  />
+        <homepageURL>https://jelix.org</homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.8.0" maxversion="1.9.*"/>
+    </dependencies>
+</module>
