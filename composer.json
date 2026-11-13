@@ -1,0 +1,29 @@
+{
+    "name": "jelix/ldapadmin-module",
+    "type": "jelix-module",
+    "description": "Module for Jelix, displaying an interface to manage an LDAP configuration used by some modules like multiauth",
+    "keywords": ["ldap", "jelix"],
+    "homepage": "http://jelix.org",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Laurent Jouanneau",
+            "email": "laurent@jelix.org"
+        }
+    ],
+    "require": {
+       "php": ">=8.2",
+       "jelix/ldap-client": "dev-master"
+    },
+    "minimum-stability": "stable",
+    "extra" : {
+        "jelix" : {
+            "modules": [
+                "ldapadmin"
+            ]
+        },
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}

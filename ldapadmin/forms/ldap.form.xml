@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+
+    <!-- connection -->
+
+    <input ref="ldap_host" required="true">
+       <label locale="ldapadmin~main.form.ldap_host"/>
+    </input>
+
+    <input ref="ldap_port" type="integer" required="true" defaultvalue="389">
+       <label locale="ldapadmin~main.form.ldap_port"/>
+    </input>
+
+    <menulist ref="ldap_tls">
+        <label locale="ldapadmin~main.form.ldap_tls"/>
+        <emptyitem locale="ldapadmin~main.form.ldap_tls.none"/>
+        <item value="starttls" locale="ldapadmin~main.form.ldap_tls.starttls" />
+        <item value="ldaps" locale="ldapadmin~main.form.ldap_tls.ldaps" />
+    </menulist>
+
+    <input ref="ldap_admin_dn">
+       <label locale="ldapadmin~main.form.ldap_admin_dn"/>
+       <help locale="ldapadmin~main.form.ldap_admin_dn.help"/>
+    </input>
+
+    <secret ref="ldap_admin_password">
+       <label locale="ldapadmin~main.form.ldap_admin_password"/>
+    </secret>
+
+    <!-- mapping -->
+
+    <input ref="searchUserBaseDN" required="true">
+       <label locale="ldapadmin~main.form.searchUserBaseDN"/>
+    </input>
+
+    <!-- searchUserFilter[], searchAttributes mapping and extra ldap attributes
+         are repeatable/dynamic: jForms has no working repeat control, so they
+         are rendered as plain HTML inputs directly in config.tpl and handled
+         manually in the controller. -->
+
+    <!-- groups synchronization -->
+
+    <checkbox ref="searchGroupEnabled">
+        <label locale="ldapadmin~main.form.searchGroupEnabled"/>
+    </checkbox>
+
+    <input ref="searchGroupFilter">
+        <label locale="ldapadmin~main.form.searchGroupFilter"/>
+    </input>
+
+    <input ref="searchGroupProperty">
+        <label locale="ldapadmin~main.form.searchGroupProperty"/>
+    </input>
+
+    <input ref="searchGroupBaseDN">
+        <label locale="ldapadmin~main.form.searchGroupBaseDN"/>
+    </input>
+
+    <checkbox ref="searchGroupKeepUserInDefaultGroups" defaultvalue="true">
+        <label locale="ldapadmin~main.form.searchGroupKeepUserInDefaultGroups"/>
+    </checkbox>
+
+    <submit ref="_submit">
+        <label locale="ldapadmin~main.form.submit"/>
+    </submit>
+</form>

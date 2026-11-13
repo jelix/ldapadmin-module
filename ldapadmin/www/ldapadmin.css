@@ -1,0 +1,27 @@
+
+.ldap-test-ok {
+
+    color: darkgreen;
+}
+
+.ldap-test-fail {
+    color: red;
+}
+
+.ldap-test-result-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid;
+    margin-top:1em;
+}
+
+.ldap-test-result-table th {
+    width:30%;
+    text-align: right;
+    padding-right:1em;
+}
+
+.ldap-result-hide {
+    display:none;
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="ldapadmin@modules.jelix.org" name="ldapadmin" createdate="2026-11-01">
+        <version date="2026-11-01">0.1.0</version>
+        <label lang="en_US">Administration interface to configure ldap access</label>
+        <description lang="en_US"></description>
+        <license>MIT</license>
+        <copyright>2026 Laurent Jouanneau</copyright>
+        <creator name="Laurent Jouanneau" email="laurent@jelix.org" />
+        <homepageURL>https://jelix.org</homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.8.0" maxversion="1.9.*"/>
+        <module name="jacl2db" />
+        <!--<choice>
+            <module name="master_admin"/>
+            <module name="adminui"/>
+        </choice>-->
+    </dependencies>
+    <autoload>
+        <namespacePathMap name="Jelix\LdapAdmin" dir="lib" />
+    </autoload>
+</module>
