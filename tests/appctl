@@ -37,7 +37,7 @@ case $COMMAND in
     composer-update)
         docker exec -t -i ${CONTAINER_PREFIX}_php appctl.sh composer_update;;
     unittests)
-        docker exec -t -i ${CONTAINER_PREFIX}_php appctl.sh unittests;;
+        docker exec -t -i --user userphp -w /jelixapp/tests/unittests ${CONTAINER_PREFIX}_php ./vendor/bin/phpunit "$@";;
     shell)
        docker exec -it --user userphp ${CONTAINER_PREFIX}_php  /bin/bash -l;;
     shellroot)
