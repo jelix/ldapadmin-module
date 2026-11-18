@@ -55,26 +55,44 @@
                 {ctrl_control 'bindAttribute'}
             </p>
 
-            <p>
-                {ctrl_label 'searchUserBaseDN'}
-                {ctrl_control 'searchUserBaseDN'}
-            </p>
-
             <fieldset>
-                <legend>{@ldapadmin~main.section.searchUserFilter@}</legend>
-                <div class="repeat-list" id="searchUserFilter-list" data-input-name="searchUserFilter">
-                    <div class="repeat-list-items">
-                        {foreach $searchUserFilters as $filter}
-                        <div class="repeat-list-item">
-                            <input type="text" name="searchUserFilter[]" value="{$filter|eschtml}" size="60" />
-                            <button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button>
-                        </div>
-                        {/foreach}
-                    </div>
-                    <button type="button" class="repeat-list-add">{@ldapadmin~main.button.add@}</button>
+                <legend>{@ldapadmin~main.section.userSearches@}</legend>
+                <p>{ctrl_label 'searchHelp'}
+                    {ctrl_control 'searchHelp'}</p>
+
+                <div class="repeat-list" id="userSearches-list">
+                    <table class="ldap-user-searches">
+                        <thead>
+                            <tr>
+                                <th class="ldap-row-number">#</th>
+                                <th>{@ldapadmin~main.userSearches.col.baseDN@}</th>
+                                <th>{@ldapadmin~main.userSearches.col.filter@}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="repeat-list-items">
+                            {foreach $userSearches as $k => $search}
+                            <tr class="repeat-list-item ldap-user-search">
+                                <td class="ldap-row-number">{$k+1}</td>
+                                <td><input type="text" name="searchUserBaseDN[]" value="{$search['baseDN']|eschtml}" size="50" /></td>
+                                <td><input type="text" name="searchUserFilter[]" value="{$search['filter']|eschtml}" size="50" /></td>
+                                <td><button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button></td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                    <template class="repeat-list-template">
+                        <tr class="repeat-list-item ldap-user-search">
+                            <td class="ldap-row-number"></td>
+                            <td><input type="text" name="searchUserBaseDN[]" value="" size="50" /></td>
+                            <td><input type="text" name="searchUserFilter[]" value="" size="50" /></td>
+                            <td><button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button></td>
+                        </tr>
+                    </template>
+                    <button type="button" class="repeat-list-add">{@ldapadmin~main.button.add.userSearch@}</button>
+                    <p class="ldap-user-searches-error ldap-test-fail ldap-result-hide">{@ldapadmin~main.message.userSearches.incomplete.js@}</p>
                 </div>
             </fieldset>
-
 
             <fieldset>
                 <legend>{@ldapadmin~main.section.searchAttributesMap@}</legend>
@@ -90,7 +108,7 @@
 
             <fieldset>
                 <legend>{@ldapadmin~main.section.extraLdapAttributes@}</legend>
-                <div class="repeat-list" id="extraLdapAttributes-list" data-input-name="extraLdapAttributes">
+                <div class="repeat-list" id="extraLdapAttributes-list">
                     <div class="repeat-list-items">
                         {foreach $extraLdapAttributes as $attr}
                         <div class="repeat-list-item">
@@ -99,6 +117,12 @@
                         </div>
                         {/foreach}
                     </div>
+                    <template class="repeat-list-template">
+                        <div class="repeat-list-item">
+                            <input type="text" name="extraLdapAttributes[]" value="" />
+                            <button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button>
+                        </div>
+                    </template>
                     <button type="button" class="repeat-list-add">{@ldapadmin~main.button.add@}</button>
                 </div>
             </fieldset>

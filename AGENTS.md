@@ -64,8 +64,13 @@ Tests go in `tests/unittests/ldapadmin/` (it holds only `.dummy` for now). `boot
   of the multiauth account-creation jForms (`accountsFormSelector`), optionally narrowed by `daoPropertiesForMapping`.
 - **Controller** `ldapadmin/controllers/ldap.classic.php`: `config()` shows the jForms form
   (`forms/ldap.form.xml`, scalar settings) in `templates/config.tpl`. `save()` saves through the adapter.
-  Array-valued settings (`searchUserFilter[]`, `extraLdapAttributes[]`) and the searchAttributes-mapping UI are plain
-  HTML inputs read by hand (`$this->param(...)`), not jForms controls: jForms has no working repeat construct.
+  Array-valued settings and the searchAttributes-mapping UI are plain HTML inputs read by hand
+  (`$this->param(...)`), not jForms controls: jForms has no working repeat construct. Repeatable lists
+  (`.repeat-list` + `<template class="repeat-list-template">`, handled in `www/ldapadmin.js`) are used for
+  `extraLdapAttributes[]` and for the "user searches" table. Each row of that table is a `searchUserBaseDN[]` +
+  `searchUserFilter[]` pair. `getUserSearchesFromConfig()` expands the config into rows, as `LdapClient` does, and
+  `collapseUserSearches()` saves a column holding a single repeated value as a string. That way the LdapClient rule
+  (same count, or one of them equals 1) always holds.
   `testConnection()`/`testMapping()`/`testIdentification()`/`testGroups()` are JSON (AJAX) actions. They check the
   values currently typed in the form, which aren't saved yet: `buildConfigFromRequest()` merges them into the adapter
   configuration and builds a temporary `LdapClient`.

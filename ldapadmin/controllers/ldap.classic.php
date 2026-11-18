@@ -61,7 +61,6 @@ class ldapCtrl extends jController
             $form->setData('ldap_tls', isset($config['tlsMode']) ? $config['tlsMode'] : '');
             $form->setData('ldap_admin_dn', isset($config['adminUserDn']) ? $config['adminUserDn'] : '');
             // the admin password is never pre-filled, see hasAdminPassword below
-            $form->setData('searchUserBaseDN', isset($config['searchUserBaseDN']) ? $config['searchUserBaseDN'] : '');
             $form->setData('bindAttribute', !empty($config['bindAttribute']) ? $config['bindAttribute'] : 'dn');
             $form->setData('searchGroupEnabled', isset($config['featureGroupLoad']) ? $config['featureGroupLoad'] : false);
             $form->setData('searchGroupFilter', isset($config['searchGroupFilter']) ? $config['searchGroupFilter'] : '');
@@ -71,13 +70,19 @@ class ldapCtrl extends jController
                 'searchGroupKeepUserInDefaultGroups',
                 !isset($config['searchGroupKeepUserInDefaultGroups']) || $config['searchGroupKeepUserInDefaultGroups']
             );
+            $form->setData('searchHelp', jLocale::get('ldapadmin~main.userSearches.help'));
 
             $hasAdminPassword = isset($config['adminPassword']) && $config['adminPassword'] !== '';
 
             $tpl->assign('hasProvider',true);
             $tpl->assign('form', $form);
             $tpl->assign('hasAdminPassword', $hasAdminPassword);
-            $tpl->assign('searchUserFilters', isset($config['searchUserFilter']) ? $config['searchUserFilter'] : array(''));
+            list($userSearches, $isConsistent) = $this->getUserSearchesFromConfig($config);
+            if (!$isConsistent) {
+                jMessage::add(jLocale::get('ldapadmin~main.message.userSearches.invalidConfig'), 'warning');
+            }
+            $tpl->assign('userSearches', $userSearches);
+
 
             $mapping = LdapClient::parseSearchAttributes($config['searchAttributes'] ?? '');
             $tpl->assign('mappableFields', $ldapConfAdapter->getMappableFields($mapping));
@@ -107,19 +112,21 @@ class ldapCtrl extends jController
             return $this->redirect('ldapadmin:config');
         }
 
-        $searchUserFilter = $this->getFilteredArrayParam('searchUserFilter');
+        list($userSearches, $incompleteRows) = $this->getUserSearchesFromRequest();
         $extraLdapAttributes = $this->getFilteredArrayParam('extraLdapAttributes');
         $searchAttributesMap = (array) $this->param('searchAttributesMap', array());
 
         $valid = $form->check();
 
-        if (empty($searchUserFilter)) {
-            $form->setErrorOn('searchUserBaseDN', jLocale::get('ldapadmin~main.message.searchUserFilter.missing'));
+        if (!empty($incompleteRows)) {
+            $form->setErrorOn('searchHelp', jLocale::get('ldapadmin~main.message.userSearches.incomplete', array(implode(', ', $incompleteRows))));
+            $valid = false;
+        } elseif (empty($userSearches)) {
+            $form->setErrorOn('searchHelp', jLocale::get('ldapadmin~main.message.userSearches.missing'));
             $valid = false;
         }
 
         if (!$valid) {
-            jMessage::add(jLocale::get('ldapadmin~main.message.form.invalid'), 'error');
             return $this->redirect('ldapadmin~ldap:config');
         }
 
@@ -147,8 +154,7 @@ class ldapCtrl extends jController
         $config['port'] = (int) $form->getData('ldap_port');
         $config['tlsMode'] = $form->getData('ldap_tls');
         $config['adminUserDn'] = $form->getData('ldap_admin_dn');
-        $config['searchUserBaseDN'] = $form->getData('searchUserBaseDN');
-        $config['searchUserFilter'] = $searchUserFilter;
+        $config = array_merge($config, $this->collapseUserSearches($userSearches));
         $config['bindAttribute'] = trim($form->getData('bindAttribute'));
         $config['searchAttributes'] = implode(',', $searchAttributesParts);
         $config['featureGroupLoad'] = $form->getData('searchGroupEnabled');
@@ -339,14 +345,10 @@ class ldapCtrl extends jController
             $config['adminPassword'] = $adminPassword;
         }
 
-        $searchUserBaseDN = $this->param('searchUserBaseDN', '');
-        if ($searchUserBaseDN !== '') {
-            $config['searchUserBaseDN'] = $searchUserBaseDN;
-        }
-
-        $searchUserFilter = $this->getFilteredArrayParam('searchUserFilter');
-        if (!empty($searchUserFilter)) {
-            $config['searchUserFilter'] = $searchUserFilter;
+        // incomplete rows are ignored here: the test uses the complete ones
+        list($userSearches) = $this->getUserSearchesFromRequest();
+        if (!empty($userSearches)) {
+            $config = array_merge($config, $this->collapseUserSearches($userSearches));
         }
 
         $bindAttribute = trim($this->param('bindAttribute', ''));
@@ -398,6 +400,107 @@ class ldapCtrl extends jController
             }
         }
         return $extra;
+    }
+
+    /**
+     * List of user searches (base DN + filter pairs), in the order LdapClient
+     * does them, built from the searchUserBaseDN and searchUserFilter
+     * parameters, which may be a string or an array.
+     *
+     * Like LdapClient, a single value is used for every value of the other
+     * parameter. If counts are inconsistent (different and none equals 1),
+     * values are paired by index, missing values are empty strings, and
+     * the configuration is reported as inconsistent.
+     *
+     * @return array [ list of ['baseDN'=>string, 'filter'=>string], bool $isConsistent ]
+     */
+    private function getUserSearchesFromConfig(array $config)
+    {
+        $baseDNs = $this->toNonEmptyStrings($config['searchUserBaseDN'] ?? '');
+        $filters = $this->toNonEmptyStrings($config['searchUserFilter'] ?? '');
+        $cb = count($baseDNs);
+        $cf = count($filters);
+
+        $isConsistent = true;
+        if ($cb == 1 && $cf > 1) {
+            $baseDNs = array_fill(0, $cf, $baseDNs[0]);
+        } elseif ($cf == 1 && $cb > 1) {
+            $filters = array_fill(0, $cb, $filters[0]);
+        } elseif ($cb != $cf) {
+            $isConsistent = false;
+        }
+
+        $searches = array();
+        for ($i = 0; $i < max(count($baseDNs), count($filters), 1); ++$i) {
+            $searches[] = array(
+                'baseDN' => $baseDNs[$i] ?? '',
+                'filter' => $filters[$i] ?? '',
+            );
+        }
+
+        return array($searches, $isConsistent);
+    }
+
+    /**
+     * User searches typed in the form: searchUserBaseDN[] and
+     * searchUserFilter[] values having the same index are on the same row.
+     * Empty rows are ignored.
+     *
+     * @return array [ list of ['baseDN'=>string, 'filter'=>string], list of row numbers (from 1) having only one of the two values ]
+     */
+    private function getUserSearchesFromRequest()
+    {
+        $baseDNs = array_values((array) $this->param('searchUserBaseDN', array()));
+        $filters = array_values((array) $this->param('searchUserFilter', array()));
+
+        $searches = array();
+        $incompleteRows = array();
+        for ($i = 0; $i < max(count($baseDNs), count($filters)); ++$i) {
+            $baseDN = trim($baseDNs[$i] ?? '');
+            $filter = trim($filters[$i] ?? '');
+            if ($baseDN === '' && $filter === '') {
+                continue;
+            }
+            if ($baseDN === '' || $filter === '') {
+                $incompleteRows[] = $i + 1;
+                continue;
+            }
+            $searches[] = array('baseDN' => $baseDN, 'filter' => $filter);
+        }
+
+        return array($searches, $incompleteRows);
+    }
+
+    /**
+     * Build the searchUserBaseDN and searchUserFilter parameters from the
+     * list of user searches. A parameter having the same value on every
+     * search is stored as a single string, so the counts rule of LdapClient
+     * (same count, or one of them equals 1) is always respected.
+     *
+     * @param array $searches list of ['baseDN'=>string, 'filter'=>string], not empty
+     */
+    private function collapseUserSearches(array $searches)
+    {
+        $collapse = function ($values) {
+            return (count(array_unique($values)) == 1) ? $values[0] : $values;
+        };
+
+        return array(
+            'searchUserBaseDN' => $collapse(array_column($searches, 'baseDN')),
+            'searchUserFilter' => $collapse(array_column($searches, 'filter')),
+        );
+    }
+
+    /**
+     * @param string|array $value
+     * @return string[] trimmed and non-empty values
+     */
+    private function toNonEmptyStrings($value)
+    {
+        $values = array_map('trim', (array) $value);
+        return array_values(array_filter($values, function ($v) {
+            return $v !== '';
+        }));
     }
 
     /**

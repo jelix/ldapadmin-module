@@ -25,3 +25,27 @@
 .ldap-result-hide {
     display:none;
 }
+.ldap-user-searches {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ldap-user-searches th {
+    text-align: left;
+}
+
+.ldap-user-searches .ldap-row-number {
+    width: 2em;
+    text-align: right;
+    padding-right: .5em;
+}
+
+.ldap-user-searches input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ldap-user-searches tr.ldap-row-error input {
+    border-color: red;
+    background-color: #fee;
+}

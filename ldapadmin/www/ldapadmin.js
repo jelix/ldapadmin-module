@@ -6,31 +6,25 @@
 (function () {
     "use strict";
 
-    function createRepeatItem(inputName) {
-        var item = document.createElement("div");
-        item.className = "repeat-list-item";
-
-        var input = document.createElement("input");
-        input.type = "text";
-        input.name = inputName + "[]";
-        input.size = 60;
-        item.appendChild(input);
-
-        var removeButton = document.createElement("button");
-        removeButton.type = "button";
-        removeButton.className = "repeat-list-remove";
-        removeButton.textContent = document.querySelector(".repeat-list-remove")
-            ? document.querySelector(".repeat-list-remove").textContent
-            : "-";
-        item.appendChild(removeButton);
-
-        return item;
+    /**
+     * Repeatable lists: each .repeat-list has a .repeat-list-items container,
+     * a <template class="repeat-list-template"> containing an empty item,
+     * and a .repeat-list-add button. Items have a .repeat-list-remove button
+     * and may have a .ldap-row-number cell, renumbered on each change.
+     */
+    function renumberRepeatItems(itemsContainer) {
+        itemsContainer.querySelectorAll(".repeat-list-item").forEach(function (item, index) {
+            var numberEl = item.querySelector(".ldap-row-number");
+            if (numberEl) {
+                numberEl.textContent = String(index + 1);
+            }
+        });
     }
 
     function initRepeatLists() {
         document.querySelectorAll(".repeat-list").forEach(function (list) {
-            var inputName = list.getAttribute("data-input-name");
             var itemsContainer = list.querySelector(".repeat-list-items");
+            var template = list.querySelector("template.repeat-list-template");
 
             list.addEventListener("click", function (evt) {
                 if (evt.target.classList.contains("repeat-list-remove")) {
@@ -38,10 +32,70 @@
                     if (item) {
                         item.remove();
                     }
-                } else if (evt.target.classList.contains("repeat-list-add")) {
-                    itemsContainer.appendChild(createRepeatItem(inputName));
+                } else if (evt.target.classList.contains("repeat-list-add") && template) {
+                    itemsContainer.append(template.content.cloneNode(true));
+                    var inputs = itemsContainer.querySelectorAll(".repeat-list-item:last-child input");
+                    if (inputs.length) {
+                        inputs[0].focus();
+                    }
+                } else {
+                    return;
                 }
+                renumberRepeatItems(itemsContainer);
             });
+        });
+    }
+
+    /**
+     * A user search needs both a base DN and a filter. Rows having only one
+     * of them are highlighted, and the form is not submitted, else the
+     * values typed in these plain inputs would be lost after the server-side
+     * check.
+     */
+    function checkUserSearches() {
+        var list = document.getElementById("userSearches-list");
+        if (!list) {
+            return true;
+        }
+        var ok = true;
+        list.querySelectorAll(".ldap-user-search").forEach(function (row) {
+            var values = Array.prototype.map.call(row.querySelectorAll("input"), function (input) {
+                return input.value.trim();
+            });
+            var filled = values.filter(function (v) { return v !== ""; }).length;
+            var incomplete = filled > 0 && filled < values.length;
+            row.classList.toggle("ldap-row-error", incomplete);
+            if (incomplete) {
+                ok = false;
+            }
+        });
+        var errorEl = list.querySelector(".ldap-user-searches-error");
+        if (ok) {
+            dlgEltHide(errorEl);
+        } else {
+            dlgEltShow(errorEl);
+        }
+        return ok;
+    }
+
+    function initUserSearchesCheck() {
+        var form = getMainForm();
+        var list = document.getElementById("userSearches-list");
+        if (!form || !list) {
+            return;
+        }
+        form.addEventListener("submit", function (evt) {
+            if (!checkUserSearches()) {
+                evt.preventDefault();
+                evt.stopImmediatePropagation();
+                $("#tabs").tabs("option", "active", 1);
+            }
+        }, true);
+        // update the error display while the user fixes the rows
+        list.addEventListener("input", function () {
+            if (list.querySelector(".ldap-row-error")) {
+                checkUserSearches();
+            }
         });
     }
 
@@ -262,6 +316,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         $( "#tabs" ).tabs();
         initRepeatLists();
+        initUserSearchesCheck();
         initConnectionTest();
         initDialogTests();
     });

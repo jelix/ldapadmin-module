@@ -38,6 +38,11 @@ class MultiAuthAdapter implements LdapConfigAdapterInterface
 
         foreach($configuration as $param => $value) {
             if (isset(LdapClient::defaultParameters[$param]) || in_array($param, $extraParameters)) {
+                // IniModifier does not cleanly replace an array value (key[]=...)
+                // by a string or by an array of another size: remove it first.
+                if (is_array($value) || is_array($profilesIni->getValue($param, $section))) {
+                    $profilesIni->removeValue($param, $section);
+                }
                 $profilesIni->setValue($param, $value, $section);
             }
         }

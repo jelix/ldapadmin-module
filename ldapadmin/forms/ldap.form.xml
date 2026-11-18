@@ -29,19 +29,21 @@
 
     <!-- mapping -->
 
-    <input ref="searchUserBaseDN" required="true" size="60">
-       <label locale="ldapadmin~main.form.searchUserBaseDN"/>
-    </input>
-
     <input ref="bindAttribute" required="true" defaultvalue="dn" size="30">
        <label locale="ldapadmin~main.form.bindAttribute"/>
        <help locale="ldapadmin~main.form.bindAttribute.help"/>
     </input>
 
-    <!-- searchUserFilter[], searchAttributes mapping and extra ldap attributes
+    <!-- user searches (searchUserBaseDN[] / searchUserFilter[] pairs), searchAttributes mapping and extra ldap attributes
          are repeatable/dynamic: jForms has no working repeat control, so they
          are rendered as plain HTML inputs directly in config.tpl and handled
          manually in the controller. -->
+
+    <!-- to output help and to have a control to display jForms error about searchUserBaseDN/searchUserFilter -->
+    <output ref="searchHelp">
+        <label/>
+    </output>
+
 
     <!-- groups synchronization -->
     <group ref="searchGroupEnabled" withcheckbox="true">
