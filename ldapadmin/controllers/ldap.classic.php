@@ -62,6 +62,7 @@ class ldapCtrl extends jController
             $form->setData('ldap_admin_dn', isset($config['adminUserDn']) ? $config['adminUserDn'] : '');
             // the admin password is never pre-filled, see hasAdminPassword below
             $form->setData('searchUserBaseDN', isset($config['searchUserBaseDN']) ? $config['searchUserBaseDN'] : '');
+            $form->setData('bindAttribute', !empty($config['bindAttribute']) ? $config['bindAttribute'] : 'dn');
             $form->setData('searchGroupEnabled', isset($config['featureGroupLoad']) ? $config['featureGroupLoad'] : false);
             $form->setData('searchGroupFilter', isset($config['searchGroupFilter']) ? $config['searchGroupFilter'] : '');
             $form->setData('searchGroupProperty', isset($config['searchGroupProperty']) ? $config['searchGroupProperty'] : '');
@@ -148,6 +149,7 @@ class ldapCtrl extends jController
         $config['adminUserDn'] = $form->getData('ldap_admin_dn');
         $config['searchUserBaseDN'] = $form->getData('searchUserBaseDN');
         $config['searchUserFilter'] = $searchUserFilter;
+        $config['bindAttribute'] = trim($form->getData('bindAttribute'));
         $config['searchAttributes'] = implode(',', $searchAttributesParts);
         $config['featureGroupLoad'] = $form->getData('searchGroupEnabled');
         if ($config['featureGroupLoad']) {
@@ -347,6 +349,11 @@ class ldapCtrl extends jController
             $config['searchUserFilter'] = $searchUserFilter;
         }
 
+        $bindAttribute = trim($this->param('bindAttribute', ''));
+        if ($bindAttribute !== '') {
+            $config['bindAttribute'] = $bindAttribute;
+        }
+
         $searchAttributesMap = (array) $this->param('searchAttributesMap', null);
         if ($searchAttributesMap) {
             $extraLdapAttributes = $this->getFilteredArrayParam('extraLdapAttributes');
@@ -380,8 +387,7 @@ class ldapCtrl extends jController
 
     /**
      * Ldap attributes fetched from the ldap directory but not mapped to any
-     * DAO field (e.g. "dn", used to build the bindUserDN from the user's
-     * full DN).
+     * DAO field.
      */
     private function getExtraLdapAttributes($mapping)
     {

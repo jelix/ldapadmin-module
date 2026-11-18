@@ -33,6 +33,11 @@
        <label locale="ldapadmin~main.form.searchUserBaseDN"/>
     </input>
 
+    <input ref="bindAttribute" required="true" defaultvalue="dn" size="30">
+       <label locale="ldapadmin~main.form.bindAttribute"/>
+       <help locale="ldapadmin~main.form.bindAttribute.help"/>
+    </input>
+
     <!-- searchUserFilter[], searchAttributes mapping and extra ldap attributes
          are repeatable/dynamic: jForms has no working repeat control, so they
          are rendered as plain HTML inputs directly in config.tpl and handled

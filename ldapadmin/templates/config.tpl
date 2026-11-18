@@ -49,6 +49,12 @@
         </div>
 
         <div id="tabs-mapping">
+
+            <p>
+                {ctrl_label 'bindAttribute'}
+                {ctrl_control 'bindAttribute'}
+            </p>
+
             <p>
                 {ctrl_label 'searchUserBaseDN'}
                 {ctrl_control 'searchUserBaseDN'}
@@ -68,6 +74,7 @@
                     <button type="button" class="repeat-list-add">{@ldapadmin~main.button.add@}</button>
                 </div>
             </fieldset>
+
 
             <fieldset>
                 <legend>{@ldapadmin~main.section.searchAttributesMap@}</legend>
