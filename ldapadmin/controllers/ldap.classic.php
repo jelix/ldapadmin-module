@@ -21,20 +21,19 @@ class ldapCtrl extends jController
     const FORM_ID = 'ldapadmin';
 
     /**
-     * List ldap providers.
-     *
-     * To be implemented later: for now, only one, pre-configured, ldap
-     * provider can be edited, through config()/save().
+     * Show the configuration of the ldap adapter
      *
      * @return jResponseHtml
      * @throws jException
      */
-    /*public function index()
+    public function index()
     {
-    }*/
+
+    }
 
     /**
      * Show the form to edit the configuration of an ldap provider
+     *
      * @return jResponseHtml
      * @throws jException
      */

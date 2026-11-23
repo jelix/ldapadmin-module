@@ -6,47 +6,52 @@
  */
 namespace Jelix\LdapAdmin;
 
-use Jelix\IniFile\IniModifier;
-use Jelix\Ldap\LdapClient;
 use Jelix\MultiAuth\LdapProviderConfig;
 use Jelix\MultiAuth\ProvidersConfigurations;
+use Jelix\MultiAuth\ProviderConfiguration;
 
 /**
  * Adapter for the multiauth module
  */
 class MultiAuthAdapter implements LdapConfigAdapterInterface
 {
+
+    protected ProviderConfiguration $providerConfig;
+
+    protected ProvidersConfigurations $multiAuthProviders;
+
+    public function __construct()
+    {
+        $this->multiAuthProviders = ProvidersConfigurations::loadFromApplication();
+        $this->providerConfig = $this->multiAuthProviders->getLdapProviderConfig(true);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasConfiguration(): bool
+    {
+        return ($this->providerConfig && $this->providerConfig->providerConfigExists && LdapProviderConfig::hasConfiguration($this->providerConfig->configuration));
+    }
+
     public function getConfiguration() : ?array
     {
-        $multiauthConfig = ProvidersConfigurations::loadFromApplication();
-        foreach($multiauthConfig->getProvidersConfig() as $providerConf) {
-            if ($providerConf->providerName != 'ldap') {
-                continue;
+        if ($this->providerConfig && $this->providerConfig->providerConfigExists) {
+            try {
+                return LdapProviderConfig::loadFullConfiguration($this->providerConfig->configuration);
+            } catch(\Exception $e) {
+                // error during the configuration load: no ldapprofile
+                return null;
             }
-
-            return LdapProviderConfig::loadFullConfiguration($providerConf->configuration);
         }
         return null;
     }
 
     public function saveConfiguration(array $configuration): bool
     {
-        $originalConfiguration = $this->getConfiguration();
-        $section = 'ldap:'.$originalConfiguration['ldapprofile'];
-        $profilesIni = new IniModifier(\jApp::varConfigPath('profiles.ini.php'));
-        $extraParameters = array('searchGroupKeepUserInDefaultGroups');
-
-        foreach($configuration as $param => $value) {
-            if (isset(LdapClient::defaultParameters[$param]) || in_array($param, $extraParameters)) {
-                // IniModifier does not cleanly replace an array value (key[]=...)
-                // by a string or by an array of another size: remove it first.
-                if (is_array($value) || is_array($profilesIni->getValue($param, $section))) {
-                    $profilesIni->removeValue($param, $section);
-                }
-                $profilesIni->setValue($param, $value, $section);
-            }
-        }
-        $profilesIni->save();
+        $this->providerConfig->configuration = $configuration;
+        $this->providerConfig = $this->multiAuthProviders->setLdapProviderConfig($this->providerConfig);
+        $this->multiAuthProviders = ProvidersConfigurations::loadFromApplication();
         return true;
     }
 
@@ -62,7 +67,7 @@ class MultiAuthAdapter implements LdapConfigAdapterInterface
     public function getMappableFields($searchAttributesMapping): array
     {
         $configuration = $this->getConfiguration();
-        if ($configuration['accountsDaoProfile'] == '') {
+        if ($configuration == null || $configuration['accountsDaoProfile'] == '') {
             return array();
         }
 
@@ -101,5 +106,35 @@ class MultiAuthAdapter implements LdapConfigAdapterInterface
             \jForms::destroy($configuration['accountsFormSelector'], $tmpId);
         }
         return $fields;
+    }
+
+    /**
+     * @return bool true if the ldap connector can be changed
+     */
+    public function canStatusBeChanged(): bool
+    {
+        return ($this->providerConfig && $this->providerConfig->providerConfigExists);
+    }
+
+    /**
+     * @return int one of the const STATUS_*
+     */
+    public function getStatus(): int
+    {
+        return ($this->providerConfig && $this->providerConfig->providerConfigExists && $this->providerConfig->isEnabled()) ? LdapConfigAdapterInterface::STATUS_ENABLED : LdapConfigAdapterInterface::STATUS_DISABLED;
+    }
+
+    /**
+     * @param int $status one of the const STATUS_*
+     */
+    public function setStatus(int $status)
+    {
+        if (!$this->providerConfig || !$this->providerConfig->providerConfigExists) {
+            throw new AdapterException("Status cannot be changed", 1);
+        }
+
+        $this->providerConfig->configuration['enabled'] = ($status != LdapConfigAdapterInterface::STATUS_DISABLED);
+        $this->providerConfig = $this->multiAuthProviders->setLdapProviderConfig($this->providerConfig);
+        $this->multiAuthProviders = ProvidersConfigurations::loadFromApplication();
     }
 }
