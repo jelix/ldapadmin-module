@@ -14,7 +14,7 @@ class ldapadminListener extends jEventListener
         if (jAcl2::check('ldapadmin.configuration')) {
             $item = new masterAdminMenuItem('ldap',
                 jLocale::get('ldapadmin~main.acl.menu.item'),
-                jUrl::get('ldapadmin~ldap:config'), 10, 'system');
+                jUrl::get('ldapadmin~ldap:index'), 10, 'system');
             //$item->icon = jApp::urlJelixWWWPath().'design/images/user.png';
             $event->add($item);
         }

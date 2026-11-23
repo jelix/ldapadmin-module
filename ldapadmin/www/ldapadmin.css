@@ -1,4 +1,54 @@
 
+#ldapadmin-index {
+    max-width: 700px;
+}
+
+.ldapadmin-status {
+    margin-bottom: 1em;
+}
+
+.ldapadmin-status-badge {
+    display: inline-block;
+    padding: 0.3em 0.8em;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.ldapadmin-status-enabled {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.ldapadmin-status-disabled {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+.ldapadmin-summary {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5em;
+}
+
+.ldapadmin-summary th {
+    text-align: right;
+    padding: 0.4em 1em 0.4em 0;
+    width: 35%;
+    vertical-align: top;
+}
+
+.ldapadmin-summary td {
+    padding: 0.4em 0;
+}
+
+.ldapadmin-actions {
+    margin-top: 1em;
+}
+
+.ldapadmin-actions .ui-button {
+    margin-right: 0.5em;
+}
+
 .ldap-test-ok {
 
     color: darkgreen;

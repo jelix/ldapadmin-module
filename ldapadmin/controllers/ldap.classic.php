@@ -7,6 +7,7 @@
 
 use Jelix\Ldap\Exception;
 use Jelix\Ldap\LdapClient;
+use Jelix\LdapAdmin\LdapConfigAdapterInterface;
 use Jelix\LdapAdmin\LdapConfigAdapters;
 
 class ldapCtrl extends jController
@@ -21,14 +22,79 @@ class ldapCtrl extends jController
     const FORM_ID = 'ldapadmin';
 
     /**
-     * Show the configuration of the ldap adapter
+     * Show an overview of the ldap configuration with status and action buttons.
      *
      * @return jResponseHtml
      * @throws jException
      */
     public function index()
     {
+        /** @var jResponseHtml $rep */
+        $rep = $this->getResponse('html');
 
+        $ldapConfAdapter = LdapConfigAdapters::getAdapter();
+
+        $tpl = new jTpl();
+
+        if ($ldapConfAdapter === null) {
+            $tpl->assign('hasProvider', false);
+        } else {
+            $tpl->assign('hasProvider', true);
+            $hasConfig = $ldapConfAdapter->hasConfiguration();
+            $tpl->assign('hasConfiguration', $hasConfig);
+            $tpl->assign('canStatusBeChanged', $ldapConfAdapter->canStatusBeChanged());
+            $tpl->assign('status', $ldapConfAdapter->getStatus());
+
+            if ($hasConfig) {
+                $config = $ldapConfAdapter->getConfiguration();
+                if ($config === array()) {
+                    $tpl->assign('hasConfiguration', false);
+                } else {
+                    $tpl->assign('hostname', $config['hostname'] ?? '');
+                    $tpl->assign('port', $config['port'] ?? 389);
+                    $tpl->assign('tlsMode', $config['tlsMode'] ?? '');
+                    $tpl->assign('adminUserDn', $config['adminUserDn'] ?? '');
+                    $tpl->assign('hasAdminPassword', !empty($config['adminPassword']));
+                    $tpl->assign('groupSyncEnabled', !empty($config['featureGroupLoad']));
+
+                    list($userSearches, ) = $this->getUserSearchesFromConfig($config);
+                    $tpl->assign('userSearchCount', count($userSearches));
+                }
+            }
+        }
+
+        $rep->addAssets('ldapadmin');
+        $rep->body->assign('MAIN', $tpl->fetch('index'));
+        $rep->body->assign('selectedMenuItem', 'ldap');
+
+        return $rep;
+    }
+
+    /**
+     * Enable or disable the ldap provider.
+     */
+    public function setStatus()
+    {
+        $ldapConfAdapter = LdapConfigAdapters::getAdapter();
+
+        if ($ldapConfAdapter === null || !$ldapConfAdapter->canStatusBeChanged()) {
+            jMessage::add(jLocale::get('ldapadmin~main.message.status.cannot.change'), 'error');
+            return $this->redirect('ldapadmin~ldap:index');
+        }
+
+        $newStatus = (int) $this->param('status', LdapConfigAdapterInterface::STATUS_DISABLED);
+        try {
+            $ldapConfAdapter->setStatus($newStatus);
+            if ($newStatus === LdapConfigAdapterInterface::STATUS_ENABLED) {
+                jMessage::add(jLocale::get('ldapadmin~main.message.status.enabled'), 'notice');
+            } else {
+                jMessage::add(jLocale::get('ldapadmin~main.message.status.disabled'), 'notice');
+            }
+        } catch (\Jelix\LdapAdmin\AdapterException $e) {
+            jMessage::add(jLocale::get('ldapadmin~main.message.status.cannot.change'), 'error');
+        }
+
+        return $this->redirect('ldapadmin~ldap:index');
     }
 
     /**
@@ -169,7 +235,7 @@ class ldapCtrl extends jController
         jForms::destroy(self::FORM_SEL, self::FORM_ID);
 
         jMessage::add(jLocale::get('ldapadmin~main.message.saved'), 'notice');
-        return $this->redirect('ldapadmin~ldap:config');
+        return $this->redirect('ldapadmin~ldap:index');
     }
 
 
