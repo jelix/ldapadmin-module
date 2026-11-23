@@ -118,23 +118,24 @@ class ldapCtrl extends jController
             $config = $ldapConfAdapter->getConfiguration();
 
             $form = jForms::get(self::FORM_SEL, self::FORM_ID);
-            if (!$form) {
+            $isNewForm = !$form;
+            if ($isNewForm) {
                 $form = jForms::create(self::FORM_SEL, self::FORM_ID);
+                $form->setData('ldap_host', isset($config['hostname']) ? $config['hostname'] : '');
+                $form->setData('ldap_port', isset($config['port']) ? $config['port'] : 389);
+                $form->setData('ldap_tls', isset($config['tlsMode']) ? $config['tlsMode'] : '');
+                $form->setData('ldap_admin_dn', isset($config['adminUserDn']) ? $config['adminUserDn'] : '');
+                $form->setData('bindAttribute', !empty($config['bindAttribute']) ? $config['bindAttribute'] : 'dn');
+                $form->setData('searchGroupEnabled', isset($config['featureGroupLoad']) ? $config['featureGroupLoad'] : false);
+                $form->setData('searchGroupFilter', isset($config['searchGroupFilter']) ? $config['searchGroupFilter'] : '');
+                $form->setData('searchGroupProperty', isset($config['searchGroupProperty']) ? $config['searchGroupProperty'] : '');
+                $form->setData('searchGroupBaseDN', isset($config['searchGroupBaseDN']) ? $config['searchGroupBaseDN'] : '');
+                $form->setData(
+                    'searchGroupKeepUserInDefaultGroups',
+                    !isset($config['searchGroupKeepUserInDefaultGroups']) || $config['searchGroupKeepUserInDefaultGroups']
+                );
             }
-            $form->setData('ldap_host', isset($config['hostname']) ? $config['hostname'] : '');
-            $form->setData('ldap_port', isset($config['port']) ? $config['port'] : 389);
-            $form->setData('ldap_tls', isset($config['tlsMode']) ? $config['tlsMode'] : '');
-            $form->setData('ldap_admin_dn', isset($config['adminUserDn']) ? $config['adminUserDn'] : '');
             // the admin password is never pre-filled, see hasAdminPassword below
-            $form->setData('bindAttribute', !empty($config['bindAttribute']) ? $config['bindAttribute'] : 'dn');
-            $form->setData('searchGroupEnabled', isset($config['featureGroupLoad']) ? $config['featureGroupLoad'] : false);
-            $form->setData('searchGroupFilter', isset($config['searchGroupFilter']) ? $config['searchGroupFilter'] : '');
-            $form->setData('searchGroupProperty', isset($config['searchGroupProperty']) ? $config['searchGroupProperty'] : '');
-            $form->setData('searchGroupBaseDN', isset($config['searchGroupBaseDN']) ? $config['searchGroupBaseDN'] : '');
-            $form->setData(
-                'searchGroupKeepUserInDefaultGroups',
-                !isset($config['searchGroupKeepUserInDefaultGroups']) || $config['searchGroupKeepUserInDefaultGroups']
-            );
             $form->setData('searchHelp', jLocale::get('ldapadmin~main.userSearches.help'));
 
             $hasAdminPassword = isset($config['adminPassword']) && $config['adminPassword'] !== '';
@@ -142,16 +143,27 @@ class ldapCtrl extends jController
             $tpl->assign('hasProvider',true);
             $tpl->assign('form', $form);
             $tpl->assign('hasAdminPassword', $hasAdminPassword);
-            list($userSearches, $isConsistent) = $this->getUserSearchesFromConfig($config);
-            if (!$isConsistent) {
-                jMessage::add(jLocale::get('ldapadmin~main.message.userSearches.invalidConfig'), 'warning');
+
+            $nonFormsData = $_SESSION['ldapadmin_form_extra'] ?? null;
+            unset($_SESSION['ldapadmin_form_extra']);
+
+            if (!$isNewForm && $nonFormsData) {
+                $userSearches = $nonFormsData['userSearches'];
+                $extraLdapAttributes = $nonFormsData['extraLdapAttributes'];
+                $mappableFields = $ldapConfAdapter->getMappableFields($nonFormsData['searchAttributesMapping']);
+            } else {
+                list($userSearches, $isConsistent) = $this->getUserSearchesFromConfig($config);
+                if (!$isConsistent) {
+                    jMessage::add(jLocale::get('ldapadmin~main.message.userSearches.invalidConfig'), 'warning');
+                }
+                $mapping = LdapClient::parseSearchAttributes($config['searchAttributes'] ?? '');
+                $mappableFields = $ldapConfAdapter->getMappableFields($mapping);
+                $extraLdapAttributes = $this->getExtraLdapAttributes($mapping);
             }
+
             $tpl->assign('userSearches', $userSearches);
-
-
-            $mapping = LdapClient::parseSearchAttributes($config['searchAttributes'] ?? '');
-            $tpl->assign('mappableFields', $ldapConfAdapter->getMappableFields($mapping));
-            $tpl->assign('extraLdapAttributes', $this->getExtraLdapAttributes($mapping));
+            $tpl->assign('mappableFields', $mappableFields);
+            $tpl->assign('extraLdapAttributes', $extraLdapAttributes);
         }
 
         $rep->addAssets('ldapadmin');
@@ -192,6 +204,7 @@ class ldapCtrl extends jController
         }
 
         if (!$valid) {
+            $this->saveNonFormsDataToSession($searchAttributesMap, $extraLdapAttributes);
             return $this->redirect('ldapadmin~ldap:config');
         }
 
@@ -450,6 +463,45 @@ class ldapCtrl extends jController
         }
 
         return $config;
+    }
+
+    /**
+     * Store non-jForms data in the session so config() can restore them
+     * after a failed save.
+     */
+    private function saveNonFormsDataToSession(array $searchAttributesMap, array $extraLdapAttributes)
+    {
+        $rawBaseDNs = array_values((array) $this->param('searchUserBaseDN', array()));
+        $rawFilters = array_values((array) $this->param('searchUserFilter', array()));
+        $allUserSearches = array();
+        for ($i = 0; $i < max(count($rawBaseDNs), count($rawFilters)); ++$i) {
+            $baseDN = $rawBaseDNs[$i] ?? '';
+            $filter = $rawFilters[$i] ?? '';
+            if ($baseDN === '' && $filter === '') {
+                continue;
+            }
+            $allUserSearches[] = array('baseDN' => $baseDN, 'filter' => $filter);
+        }
+        if (empty($allUserSearches)) {
+            $allUserSearches[] = array('baseDN' => '', 'filter' => '');
+        }
+
+        $mapping = array();
+        foreach ($searchAttributesMap as $field => $ldapAttr) {
+            $ldapAttr = trim($ldapAttr);
+            if ($ldapAttr !== '') {
+                $mapping[$ldapAttr] = $field;
+            }
+        }
+        foreach ($extraLdapAttributes as $ldapAttr) {
+            $mapping[$ldapAttr] = '';
+        }
+
+        $_SESSION['ldapadmin_form_extra'] = array(
+            'userSearches' => $allUserSearches,
+            'extraLdapAttributes' => $extraLdapAttributes,
+            'searchAttributesMapping' => $mapping,
+        );
     }
 
     /**
