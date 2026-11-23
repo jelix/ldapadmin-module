@@ -261,7 +261,7 @@ class ldapCtrl extends jController
                 'ok' => false,
                 'error' => $message
             );
-        });
+        }, LdapClient::TEST_MODE_IGNORE_USER_SEARCH | LdapClient::TEST_MODE_IGNORE_GROUP_SEARCH);
         return $rep;
     }
 
@@ -295,7 +295,7 @@ class ldapCtrl extends jController
                 'fields' => $userAttributes->userAttributes,
                 'extraAttributes' => $extraAttributes,
             );
-        });
+        }, LdapClient::TEST_MODE_IGNORE_GROUP_SEARCH);
         return $rep;
     }
 
@@ -321,7 +321,7 @@ class ldapCtrl extends jController
                 return array('ok' => false, 'error' => $message);
             }
             return array('ok' => true, 'dn' => $result->dn);
-        });
+        },  LdapClient::TEST_MODE_IGNORE_GROUP_SEARCH);
         return $rep;
     }
 
@@ -355,7 +355,7 @@ class ldapCtrl extends jController
      * @param callable $test function(ldapProvider $provider): array
      * @return jResponseJson
      */
-    private function buildTestResponse($test)
+    private function buildTestResponse($test, $testMode = 0)
     {
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
@@ -367,7 +367,7 @@ class ldapCtrl extends jController
         }
 
         $config = $this->buildConfigFromRequest($ldapConfAdapter->getConfiguration());
-        $ldapClient = new LdapClient($config);
+        $ldapClient = new LdapClient($config, null, $testMode);
 
         try {
             $rep->data = $test($ldapClient, $config);
