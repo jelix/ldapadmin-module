@@ -1,7 +1,7 @@
 <?php
 /**
  * @author      Laurent Jouanneau
- * @copyright   2023 Laurent Jouanneau
+ * @copyright   2023-2026 Laurent Jouanneau
  * @license MIT
  */
 use \Jelix\Installer\Module\API\ConfigurationHelpers;
@@ -23,22 +23,15 @@ class ldapadminModuleConfigurator extends \Jelix\Installer\Module\Configurator
 
     public function configure(ConfigurationHelpers $helpers)
     {
-        /*
-         $helpers->declareGlobalWebAssets(
+        $helpers->declareGlobalWebAssets(
             'ldapadmin',
             array(
-                'css' => array('design/ldapadmin.css'),
-                'js' => array(
-                    'js/ldapadmin.js'
-                ),
-                'require' => array(
-                    'jquery_ui'
-                )
+                'js' => array('ldapadmin:ldapadmin.js'),
+                'css' => array('ldapadmin:ldapadmin.css'),
+                'require' => array('jquery_ui'),
             ),
             'common',
             false
         );
-         */
-
     }
 }

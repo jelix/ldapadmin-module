@@ -16,16 +16,5 @@ class ldapadminModuleInstaller extends \Jelix\Installer\Module\Installer
         jAcl2DbManager::createRightGroup('ldapadmin', 'ldapadmin~main.acl.grp');
         jAcl2DbManager::createRight('ldapadmin.configuration', 'ldapadmin~main.acl.config', 'ldapadmin');
         jAcl2DbManager::addRight('admins', 'ldapadmin.configuration');
-
-        $helpers->declareGlobalWebAssets(
-            'ldapadmin',
-            array(
-                'js' => array('ldapadmin:ldapadmin.js'),
-                'css' => array('ldapadmin:ldapadmin.css'),
-                'require' => array('jquery_ui'),
-            ),
-            'common',
-            false
-        );
     }
 }
