@@ -196,3 +196,18 @@ name=
 
 [session]
 storage=
+
+
+[multiauth]
+
+; list of authentication providers
+providers[]="ldap:multiauth_ldap"
+providers[]=dbaccounts
+
+
+; when a user login successfully, an account will be created automatically
+automaticAccountCreation=on
+
+[multiauth_ldap]
+; profile to use for ldap
+ldapprofile=multiauthldap
