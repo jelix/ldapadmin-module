@@ -66,7 +66,7 @@ class MultiAuthAdapter implements LdapConfigAdapterInterface
      */
     public function getMappableFields($searchAttributesMapping): array
     {
-        $configuration = $this->getConfiguration();
+        $configuration = $this->providerConfig->configuration;
         if ($configuration == null || $configuration['accountsDaoProfile'] == '') {
             return array();
         }
