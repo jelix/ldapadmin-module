@@ -46,11 +46,11 @@ interface LdapConfigAdapterInterface
      *
      * It should contain parameters for the LdapClient class.
      *
-     * If there is not a saved configuration, it should return default parameters
+     * If there is not a saved configuration, it should return default parameters or an empty array
      *
-     * @return array|null the configuration or null if not available
+     * @return array the configuration or [] if not available
      */
-    public function getConfiguration() : ?array;
+    public function getConfiguration() : array;
 
     /**
      * save the given ldap configuration

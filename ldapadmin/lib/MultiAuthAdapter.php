@@ -34,17 +34,17 @@ class MultiAuthAdapter implements LdapConfigAdapterInterface
         return ($this->providerConfig && $this->providerConfig->providerConfigExists && LdapProviderConfig::hasConfiguration($this->providerConfig->configuration));
     }
 
-    public function getConfiguration() : ?array
+    public function getConfiguration() : array
     {
         if ($this->providerConfig && $this->providerConfig->providerConfigExists) {
             try {
                 return LdapProviderConfig::loadFullConfiguration($this->providerConfig->configuration);
             } catch(\Exception $e) {
                 // error during the configuration load: no ldapprofile
-                return null;
+                return [];
             }
         }
-        return null;
+        return [];
     }
 
     public function saveConfiguration(array $configuration): bool
