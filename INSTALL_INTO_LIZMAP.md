@@ -22,7 +22,7 @@ composer require --working-dir=lizmap/my-packages "jelix/ldapadmin-module"
 * Then go into `lizmap/install/` and execute Lizmap install scripts :
 
 ```bash
-php configurator.php multiauth
+php configurator.php ldapadmin
 php installer.php
 ./clean_vartmp.sh
 ./set_rights.sh
@@ -39,7 +39,7 @@ php installer.php
 php lizmap/install/configurator.php ldapadmin
 ```
 
-* Then execute Lizmap install scripts into `lizmap/install/` :
+* Then execute Lizmap installation:
 
 ```bash
 php lizmap/install/installer.php
