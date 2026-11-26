@@ -74,8 +74,8 @@
                             {foreach $userSearches as $k => $search}
                             <tr class="repeat-list-item ldap-user-search">
                                 <td class="ldap-row-number">{$k+1}</td>
-                                <td><input type="text" name="searchUserBaseDN[]" value="{$search['baseDN']|eschtml}" size="50" /></td>
-                                <td><input type="text" name="searchUserFilter[]" value="{$search['filter']|eschtml}" size="50" /></td>
+                                <td><input type="text" name="searchUserBaseDN[]" value="{$search['baseDN']|eschtml}" size="30" /></td>
+                                <td><input type="text" name="searchUserFilter[]" value="{$search['filter']|eschtml}" size="30" /></td>
                                 <td><button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button></td>
                             </tr>
                             {/foreach}
@@ -84,8 +84,8 @@
                     <template class="repeat-list-template">
                         <tr class="repeat-list-item ldap-user-search">
                             <td class="ldap-row-number"></td>
-                            <td><input type="text" name="searchUserBaseDN[]" value="" size="50" /></td>
-                            <td><input type="text" name="searchUserFilter[]" value="" size="50" /></td>
+                            <td><input type="text" name="searchUserBaseDN[]" value="" size="30" /></td>
+                            <td><input type="text" name="searchUserFilter[]" value="" size="30" /></td>
                             <td><button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button></td>
                         </tr>
                     </template>
@@ -154,7 +154,8 @@
         </div>
     </div>
     <p class="ldap-form-submit">
-        {formsubmit '_submit'}
+        {formsubmit '_submit', ['class'=>'ui-button ui-widget ui-corner-all']}
+        <a href="{jurl 'ldapadmin~ldap:cancel'}" class="ui-button ui-widget ui-corner-all">{@ldapadmin~main.button.cancel@}</a>
     </p>
 
     {/form}

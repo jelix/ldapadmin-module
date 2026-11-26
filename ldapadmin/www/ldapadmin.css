@@ -49,6 +49,12 @@
     margin-right: 0.5em;
 }
 
+.ldapadmin-create-buttons {
+    display: flex;
+    gap: 0.5em;
+    flex-wrap: wrap;
+}
+
 .ldap-test-ok {
 
     color: darkgreen;

@@ -9,6 +9,7 @@ use Jelix\Ldap\Exception;
 use Jelix\Ldap\LdapClient;
 use Jelix\LdapAdmin\LdapConfigAdapterInterface;
 use Jelix\LdapAdmin\LdapConfigAdapters;
+use Jelix\LdapAdmin\ServerTypeDefaults;
 
 class ldapCtrl extends jController
 {
@@ -124,6 +125,14 @@ class ldapCtrl extends jController
             $form = jForms::get(self::FORM_SEL, self::FORM_ID);
             $isNewForm = !$form;
             if ($isNewForm) {
+
+                if (!$ldapConfAdapter->hasConfiguration()) {
+                    $serverType = $this->param('servertype', '');
+                    if ($serverType !== '') {
+                        $config = ServerTypeDefaults::getDefaults($serverType);
+                    }
+                }
+
                 $form = jForms::create(self::FORM_SEL, self::FORM_ID);
                 $form->setData('ldap_host', isset($config['hostname']) ? $config['hostname'] : '');
                 $form->setData('ldap_port', isset($config['port']) ? $config['port'] : 389);
@@ -260,7 +269,13 @@ class ldapCtrl extends jController
         return $this->redirect('ldapadmin~ldap:index');
     }
 
-
+    public function cancel()
+    {
+        jMessage::add(jLocale::get('ldapadmin~main.message.not.saved'), 'notice');
+        // destroy the form so it could be recreated from scratch with default values
+        jForms::destroy(self::FORM_SEL, self::FORM_ID);
+        return $this->redirect('ldapadmin~ldap:index');
+    }
 
     /**
      * Test the connection to the ldap server with the (possibly unsaved)

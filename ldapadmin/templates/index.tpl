@@ -6,9 +6,12 @@
 
     {if $hasConfiguration === false}
     <p>{@ldapadmin~main.index.no.configuration@}</p>
-    <p>
+    <p>{@ldapadmin~main.index.create.choose.servertype@}</p>
+    <div class="ldapadmin-create-buttons">
         <a href="{jurl 'ldapadmin~ldap:config'}" class="ui-button ui-widget ui-corner-all">{@ldapadmin~main.button.create@}</a>
-    </p>
+        <a href="{jurl 'ldapadmin~ldap:config', array('servertype'=>'openldap')}" class="ui-button ui-widget ui-corner-all">{@ldapadmin~main.button.create.openldap@}</a>
+        <a href="{jurl 'ldapadmin~ldap:config', array('servertype'=>'activedirectory')}" class="ui-button ui-widget ui-corner-all">{@ldapadmin~main.button.create.activedirectory@}</a>
+    </div>
     {else}
     <div id="ldapadmin-index">
 
