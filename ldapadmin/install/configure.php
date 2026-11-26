@@ -6,6 +6,7 @@
  */
 use \Jelix\Installer\Module\API\ConfigurationHelpers;
 use Jelix\Routing\UrlMapping\EntryPointUrlModifier;
+use Jelix\Routing\UrlMapping\MapEntry\MapInclude;
 
 class ldapadminModuleConfigurator extends \Jelix\Installer\Module\Configurator
 {
@@ -16,10 +17,15 @@ class ldapadminModuleConfigurator extends \Jelix\Installer\Module\Configurator
         );
     }
 
-    /*public function declareUrls(EntryPointUrlModifier $registerOnEntryPoint)
+    public function declareUrls(EntryPointUrlModifier $registerOnEntryPoint)
     {
-
-    }*/
+        $registerOnEntryPoint->havingName(
+            'admin',
+            array(
+                new MapInclude('urls.xml')
+            )
+        );
+    }
 
     public function configure(ConfigurationHelpers $helpers)
     {
