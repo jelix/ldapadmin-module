@@ -63,7 +63,11 @@ class ldapCtrl extends jController
             }
         }
 
-        $rep->addAssets('ldapadmin');
+        // XXX because of a bug into Jelix with the revision parameter,  we cannot use the '<module>:<file>' syntax in web assets yet
+        //$rep->addAssets('ldapadmin');
+        $rep->addAssets('jquery_ui');
+        $rep->addCSSLink(jUrl::get('jelix~www:getfile', array('targetmodule'=>'ldapadmin', 'file'=>'ldapadmin.css')));
+        $rep->addJSLink(jUrl::get('jelix~www:getfile', array('targetmodule'=>'ldapadmin', 'file'=>'ldapadmin.js')));
         $rep->body->assign('MAIN', $tpl->fetch('index'));
         $rep->body->assign('selectedMenuItem', 'ldap');
 
@@ -166,7 +170,12 @@ class ldapCtrl extends jController
             $tpl->assign('extraLdapAttributes', $extraLdapAttributes);
         }
 
-        $rep->addAssets('ldapadmin');
+        // XXX because of a bug into Jelix with the revision parameter,  we cannot use the '<module>:<file>' syntax in web assets yet
+        //$rep->addAssets('ldapadmin');
+        $rep->addAssets('jquery_ui');
+        $rep->addCSSLink(jUrl::get('jelix~www:getfile', array('targetmodule'=>'ldapadmin', 'file'=>'ldapadmin.css')));
+        $rep->addJSLink(jUrl::get('jelix~www:getfile', array('targetmodule'=>'ldapadmin', 'file'=>'ldapadmin.js')));
+
         $rep->body->assign('MAIN', $tpl->fetch('config'));
         $rep->body->assign('selectedMenuItem', 'ldap');
 
