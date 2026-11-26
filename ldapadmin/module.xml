@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="ldapadmin@modules.jelix.org" name="ldapadmin" createdate="2026-11-01">
-        <version date="2026-11-26">1.0.0</version>
+        <version date="2026-11-26">1.0.1</version>
         <label lang="en_US">Administration interface to configure ldap access</label>
         <description lang="en_US"></description>
         <license>MIT</license>
