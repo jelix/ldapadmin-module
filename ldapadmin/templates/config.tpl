@@ -40,7 +40,7 @@
                 </span>
             </p>
             <p>
-                <button type="button" class="ldap-test-button" data-test="connection"
+                <button type="button" class="ldap-test-button ui-button ui-widget ui-corner-all" data-test="connection"
                     data-url="{jurl 'ldapadmin~ldap:testConnection'}">{@ldapadmin~main.button.test.connection@}</button>
                 <span class="ldap-test-inline-result" data-test-result="connection"
                     data-label-ok="{@ldapadmin~main.test.result.ok@}"
@@ -76,7 +76,7 @@
                                 <td class="ldap-row-number">{$k+1}</td>
                                 <td><input type="text" name="searchUserBaseDN[]" value="{$search['baseDN']|eschtml}" size="30" /></td>
                                 <td><input type="text" name="searchUserFilter[]" value="{$search['filter']|eschtml}" size="30" /></td>
-                                <td><button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button></td>
+                                <td><button type="button" class="repeat-list-remove ui-button ui-widget ui-corner-all">{@ldapadmin~main.button.remove@}</button></td>
                             </tr>
                             {/foreach}
                         </tbody>
@@ -86,10 +86,10 @@
                             <td class="ldap-row-number"></td>
                             <td><input type="text" name="searchUserBaseDN[]" value="" size="30" /></td>
                             <td><input type="text" name="searchUserFilter[]" value="" size="30" /></td>
-                            <td><button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button></td>
+                            <td><button type="button" class="repeat-list-remove ui-button ui-widget ui-corner-all">{@ldapadmin~main.button.remove@}</button></td>
                         </tr>
                     </template>
-                    <button type="button" class="repeat-list-add">{@ldapadmin~main.button.add.userSearch@}</button>
+                    <button type="button" class="repeat-list-add ui-button ui-widget ui-corner-all">{@ldapadmin~main.button.add.userSearch@}</button>
                     <p class="ldap-user-searches-error ldap-test-fail ldap-result-hide">{@ldapadmin~main.message.userSearches.incomplete.js@}</p>
                 </div>
             </fieldset>
@@ -113,27 +113,27 @@
                         {foreach $extraLdapAttributes as $attr}
                         <div class="repeat-list-item">
                             <input type="text" name="extraLdapAttributes[]" value="{$attr|eschtml}" />
-                            <button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button>
+                            <button type="button" class="repeat-list-remove ui-button ui-widget ui-corner-all">{@ldapadmin~main.button.remove@}</button>
                         </div>
                         {/foreach}
                     </div>
                     <template class="repeat-list-template">
                         <div class="repeat-list-item">
                             <input type="text" name="extraLdapAttributes[]" value="" />
-                            <button type="button" class="repeat-list-remove">{@ldapadmin~main.button.remove@}</button>
+                            <button type="button" class="repeat-list-remove" ui-button ui-widget ui-corner-all>{@ldapadmin~main.button.remove@}</button>
                         </div>
                     </template>
-                    <button type="button" class="repeat-list-add">{@ldapadmin~main.button.add@}</button>
+                    <button type="button" class="repeat-list-add ui-button ui-widget ui-corner-all">{@ldapadmin~main.button.add@}</button>
                 </div>
             </fieldset>
 
             <p>
-                <button type="button" class="ldap-test-button" data-test="mapping" data-need-password="0"
+                <button type="button" class="ldap-test-button ui-button ui-widget ui-corner-all" data-test="mapping" data-need-password="0"
                     data-url="{jurl 'ldapadmin~ldap:testMapping'}"
                     data-dialog-title="{@ldapadmin~main.dialog.title.mapping@}"
                     >{@ldapadmin~main.button.test.mapping@}</button>
 
-                <button type="button" class="ldap-test-button" data-test="identification" data-need-password="1"
+                <button type="button" class="ldap-test-button ui-button ui-widget ui-corner-all" data-test="identification" data-need-password="1"
                         data-url="{jurl 'ldapadmin~ldap:testIdentification'}"
                         data-dialog-title="{@ldapadmin~main.dialog.title.identification@}"
                 >{@ldapadmin~main.button.test.identification@}</button>
@@ -144,7 +144,7 @@
 
             {ctrl_control 'searchGroupEnabled'}
             <p>
-                <button type="button" class="ldap-test-button" data-test="groups" data-need-password="1"
+                <button type="button" class="ldap-test-button ui-button ui-widget ui-corner-all" data-test="groups" data-need-password="1"
                     data-url="{jurl 'ldapadmin~ldap:testGroups'}"
                     data-dialog-title="{@ldapadmin~main.dialog.title.groups@}"
                     data-groups-none="{@ldapadmin~main.test.groups.none@}"
